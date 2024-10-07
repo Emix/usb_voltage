@@ -1,3 +1,4 @@
+#include <string.h>
 #include <furi.h>
 #include <furi_hal.h>
 #include <gui/gui.h>
@@ -11,14 +12,29 @@ void render_voltage_on_screen(Canvas* canvas, void* ctx) {
     (void)ctx; // Игнорируем неиспользуемый параметр
 
     float voltage = furi_hal_power_get_usb_voltage();
-
     char voltage_str[32];
-    snprintf(voltage_str, sizeof(voltage_str), "USB Voltage: %.2lf V", (double)voltage);
+    char comment[32];
 
+    // Определяем значение напряжения и соответствующий комментарий
+    if(voltage > 4.5f && voltage < 5.5f) {
+        snprintf(voltage_str, sizeof(voltage_str), "USB Voltage: %.2lf V", (double)voltage);
+        snprintf(comment, sizeof(comment), "Power bank OK."); // Сокращенный комментарий
+    } else if(voltage < 4.5f) {
+        snprintf(voltage_str, sizeof(voltage_str), "USB Voltage: %.2lf V", (double)voltage);
+        snprintf(comment, sizeof(comment), "Low voltage!"); // Сокращенный комментарий
+    } else {
+        snprintf(voltage_str, sizeof(voltage_str), "USB Voltage: %.2lf V", (double)voltage);
+        snprintf(comment, sizeof(comment), "High voltage!"); // Сокращенный комментарий
+    }
+
+    // Очистка канваса и отрисовка текста
     canvas_clear(canvas);
     canvas_set_font(canvas, FontPrimary);
-    canvas_draw_str(canvas, 10, 30, voltage_str);
-    canvas_draw_str(canvas, 10, 50, "Press back to exit");
+
+    // Отображаем строки
+    canvas_draw_str(canvas, 5, 10, voltage_str);
+    canvas_draw_str(canvas, 5, 30, comment);
+    canvas_draw_str(canvas, 5, 50, "Press back to exit");
 }
 
 // Обработчик ввода
@@ -46,7 +62,7 @@ int32_t usb_voltage_app(void* p) {
     // Главный цикл приложения
     while(!state.exit) {
         view_port_update(view_port);
-        furi_delay_ms(100);
+        furi_delay_ms(100); // Обновление каждые 100 мс
     }
 
     // Очистка ресурсов

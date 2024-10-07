@@ -1,14 +1,13 @@
 App(
     appid="usb_voltage",
-    name="Hello World",
+    name="USB Voltage",
     apptype=FlipperAppType.EXTERNAL,
     entry_point="usb_voltage_app",
-    cdefines=["APP_HELLO_WORLD"],
     requires=[
         "gui",
     ],
     stack_size=1 * 1024,
     order=90,
-    fap_icon="usb-drive.xbm",
-    fap_category="Misc",
+    fap_icon="voltage_icon_10x10.png",
+    fap_category="USB",
 )
